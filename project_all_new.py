@@ -13,7 +13,7 @@ root.resizable(False,False)
 
 #function (menu)
 def About():
-    tkinter.messagebox.showinfo("โปรแกรมรายรับ-รายจ่าย","สร้างโดย นาย วรธน มีมูล 6604062630498 กับ นาย ภัทรกร ยุทธเทพา 6604062630412")
+    tkinter.messagebox.showinfo("โปรแกรมรายรับ-รายจ่าย","สร้างโดย นาย วรธน มีมูล 6604062630498 กับ  นาย ภัทรกร ยุทธเทพา 6604062630412")
 def Exit():
     confirm = tkinter.messagebox.askquestion("ยืนยันการปิดโปรแกรม","ต้องการปิดโปรแกรมมั้ย ?")
     if confirm == "yes":

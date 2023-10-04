@@ -51,9 +51,6 @@ notebook.grid(row=0,column=0,sticky=NW)
 data_income_dict = {}
 data_expenses_dict = {}
 
-total_income = 0
-total_expenses = 0
-
 income_date = StringVar()
 
 income_str = StringVar()
@@ -67,15 +64,6 @@ output_entry2 = IntVar()
 output_entry3 = IntVar()
 
 #function
-
-def update_totals():
-    global total_income, total_expenses
-    total_income = sum(entry['Amount'] for entry in data_income_dict.values())
-    total_expenses = sum(entry['Amount'] for entry in data_expenses_dict.values())
-    output_entry1.set(total_income)
-    output_entry2.set(total_expenses)
-    output_entry3.set(abs(total_income - total_expenses))
-
 def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, label_warn):
     date = date_detail.get_date()
     date_str = date.strftime('%d/%m/%Y') #เอามาเพื่อเปลี่ยนเป็น วว/ดด/ปป
@@ -83,8 +71,6 @@ def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, lab
     num = entry_amount.get()
     comment = comment_var.get()
     time = datetime.now().strftime('%H:%M:%S')
-    update_totals()
-
     try:
         num = int(num)
 
@@ -131,12 +117,12 @@ def load_data(data_income_dict, data_expenses_dict):
         label_sum4.config(text='คุณใช้เงินมากว่ารายรับ {} บาท'.format(total_expenses_amount-total_income_amount))
         label_sum4.config(fg='red')
 
-# Function to export data to CSV
 def export_to_csv():
-    try:
-        with open('income_expenses.csv', 'w', newline='\n', encoding='utf-8') as csvfile:
-            fieldnames = ['Type', 'Date', 'Detail', 'Amount', 'Comment']
+      try:
+        with open('income_expenses.csv', 'w', newline='\n',encoding='utf-8') as csvfile:
+            fieldnames = ['Type','Date', 'Detail', 'Amount', 'Comment']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
             writer.writeheader()
 
             for date, entry in data_income_dict.items():
@@ -146,31 +132,16 @@ def export_to_csv():
             for date, entry in data_expenses_dict.items():
                 entry['Type'] = 'Expenses'
                 writer.writerow(entry)
+        label_sum4.config(text='Data exported to income_expenses.csv', fg='green')
 
-        # Separate total income and total expenses
-        total_income = sum(entry['Amount'] for entry in data_income_dict.values())
-        total_expenses = sum(entry['Amount'] for entry in data_expenses_dict.values())
+        # เปิดไฟล์ CSV ใน Window ใหม่
+        subprocess.Popen(['start', 'income_expenses.csv'], shell=True)
 
-        # Write separate totals to a totals CSV file
-        with open('totals.csv', 'w', newline='\n', encoding='utf-8') as totalsfile:
-            totals_writer = csv.DictWriter(totalsfile, fieldnames=['Type', 'Total'])
-            totals_writer.writeheader()
-            totals_writer.writerow({'Type': 'Income', 'Total': total_income})
-            totals_writer.writerow({'Type': 'Expenses', 'Total': total_expenses})
-
-        label_sum5.config(text='Data exported to income_expenses.csv and totals.csv', fg='green')
-
-    except Exception as e:
-        label_sum5.config(text='Error exporting data: {}'.format(str(e)), fg='red')
-
-
+      except Exception as e:
+        label_sum4.config(text='Error exporting data: {}'.format(str(e)), fg='red')
 
 def load_data_from_csv():
     try:
-        # Clear existing data in TreeView
-        show_data_income.delete(*show_data_income.get_children())
-        show_data_expenses.delete(*show_data_expenses.get_children())
-
         with open('income_expenses.csv', 'r', newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
@@ -192,25 +163,12 @@ def load_data_from_csv():
                     }
                     show_data_expenses.insert('', 'end', values=(date_str, row['Detail'], int(row['Amount']), row['Comment']))
 
-        # Load totals from totals.csv
-        with open('totals.csv', 'r', newline='', encoding='utf-8') as totalsfile:
-            totals_reader = csv.DictReader(totalsfile)
-            for row in totals_reader:
-                if row['Type'] == 'Income':
-                    output_entry1.set(int(row['Total']))
-                elif row['Type'] == 'Expenses':
-                    output_entry2.set(int(row['Total']))    
-
-        # Calculate and set the difference in output_entry3
-        output_entry3.set(abs(int(output_entry1.get()) - int(output_entry2.get())))
-
-        label_sum5.config(text='Data loaded from income_expenses.csv and totals.csv', fg='green')
+        # อัพเดทตรง Label ข้างล่าง
+        load_data(data_income_dict, data_expenses_dict)
+        label_sum4.config(text='Data loaded from income_expenses.csv', fg='green')
 
     except Exception as e:
-        label_sum5.config(text='Error loading data: {}'.format(str(e)), fg='red')
-
-
-update_totals()
+        label_sum4.config(text='Error loading data: {}'.format(str(e)), fg='red')
 
 #page 1
 Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
@@ -305,8 +263,5 @@ Import_btn = Button(tab3,text="Import to CSV",width=20,font=('arial',15,'bold'),
 
 label_sum4 = Label(tab3, text='',font=('arial',25,'bold'))
 label_sum4.grid(column=0, row=8, pady=40)
-
-label_sum5 = Label(tab3, text='',font=('arial',25,'bold'))
-label_sum5.grid(column=0, row=9, pady=40)
 
 root.mainloop()

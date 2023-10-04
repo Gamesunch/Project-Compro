@@ -2,6 +2,7 @@ from datetime import datetime
 from tkinter import *
 import tkinter.messagebox
 from tkinter import ttk
+from tkcalendar import DateEntry
 import csv
 import subprocess
 
@@ -51,7 +52,9 @@ notebook.grid(row=0,column=0,sticky=NW)
 #variable
 data_income_dict = {}
 data_expenses_dict = {}
+
 income_date = StringVar()
+
 income_str = StringVar()
 income_num = StringVar()
 expenses_str = StringVar()
@@ -64,31 +67,32 @@ output_entry3 = IntVar()
 
 #function
 def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, label_warn):
-    date = date_detail.get()
+    date = date_detail.get_date()
+    date_str = date.strftime('%d/%m/%Y') #เอามาเพื่อเปลี่ยนเป็น วว/ดด/ปป
     detail = entry_detail.get()
     num = entry_amount.get()
     comment = comment_var.get()
     time = datetime.now().strftime('%H:%M:%S')
     try:
         num = int(num)
-        
+
         label_warn.config(text='')
         label_warn.config(fg='white')
     except ValueError:
         label_warn.config(text='จำนวนที่คุณกรอกไม่ใช่ตัวเลข กรุณาลองใหม่')
         label_warn.config(fg='red')
-        
+
         selected_item = show_data.selection()
         if selected_item:
             show_data.delete(selected_item)
         return
 
-    key = (f"{date} {time}")
-    data_dict[key] = {'Date': date, 'Detail': detail, 'Amount': num, 'Comment': comment}
+    key = (f"{date_str} {time}")
+    data_dict[key] = {'Date': date_str, 'Detail': detail, 'Amount': num, 'Comment': comment}
+    show_data.insert('', 'end', values=(date_str, detail, num, comment))
 
-    show_data.insert('', 'end', values=(date, detail, num, comment))
-    print('income: ',data_income_dict)
-    print('expenses: ',data_expenses_dict)
+    print('income: ', data_income_dict)
+    print('expenses: ', data_expenses_dict)
 
     return data_dict
 
@@ -139,11 +143,13 @@ def export_to_csv():
         label_sum4.config(text='Error exporting data: {}'.format(str(e)), fg='red')
 
 
-
   
 #page 1
-Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี) (คศ.)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
-ety_date_income = Entry(tab1,width='20',font=('arial',15,'bold'), textvariable=income_date, justify='center').grid(row=1 , column= 0) 
+Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
+cal = DateEntry(tab1, font=('arial', 15, 'bold'), date_pattern='dd/MM/yyyy', textvariable=income_date)
+cal.grid(row=1, column=0)
+
+ 
 
 Label_detail_income = Label(tab1,text="กรุณากรอกรายการรายรับ",font=('arial',15,'bold')).grid(row=0,column=1,pady=(50))
 ety_detail_income = Entry(tab1,width='30',font=('arial',15,'bold'), textvariable=income_str, justify='center').grid(row=1 , column= 1,)
@@ -154,8 +160,9 @@ ety_amount_income = Entry(tab1,width='30',font=('arial',15,'bold'), textvariable
 option = ttk.Combobox(tab1,state="readonly",values=["เงินสด", "เงินโอน"],width='18',font=('arial',15,'bold'), textvariable=comment_var).grid(row=5,column=1,pady=(30,0),)
 comment_var.set(value='เงินสด')
 
-btn_save = Button(tab1,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date,data_income_dict, show_data_income, income_str, income_num, label_warn1),load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
-
+btn_save = Button(tab1, text="บันทึก", font=('arial', 15, 'bold'),
+                  command=lambda: [save_data(cal, data_income_dict, show_data_income, income_str, income_num, label_warn1),
+                                   load_data(data_income_dict, data_expenses_dict)]).grid(row=6, column=1, pady=(20, 0))
 label_warn1 = Label(tab1, text='',font=('arial',25,'bold'))
 label_warn1.grid(columnspan=2, row=8, pady=40)
 
@@ -180,7 +187,8 @@ show_data_income.grid(row=7,columnspan=2, pady=30,padx=(100,0))
 #page 2 
 
 Label_date_income = Label(tab2,text="กรุณาใส่วันที่ (วัน/เดือน/ปี) (คศ.)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
-ety_date_income = Entry(tab2,width='20',font=('arial',15,'bold'), textvariable=income_date, justify='center').grid(row=1 , column= 0)
+cal = DateEntry(tab2, font=('arial', 15, 'bold'), date_pattern='dd/MM/yyyy', textvariable=income_date)
+cal.grid(row=1, column=0)
 
 Label_detail_income = Label(tab2,text="กรุณากรอกรายการรายจ่าย",font=('arial',15,'bold')).grid(row=0,column=1,pady=(50))
 ety_detail_income = Entry(tab2,width='30',font=('arial',15,'bold'), textvariable=expenses_str, justify='center').grid(row=1 , column= 1,)
@@ -191,7 +199,9 @@ ety_amount_income = Entry(tab2,width='30',font=('arial',15,'bold'), textvariable
 option = ttk.Combobox(tab2,state="readonly",values=["เงินสด", "เงินโอน"],width='18',font=('arial',15,'bold'), textvariable=comment_var).grid(row=5,column=1,pady=(30,0),)
 comment_var.set(value='เงินสด')
 
-btn_save = Button(tab2,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date, data_expenses_dict, show_data_expenses, expenses_str, expenses_num, label_warn2), load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
+btn_save = Button(tab2,text="บันทึก",font=('arial',15,'bold'),
+                  command=lambda: [save_data(cal, data_expenses_dict, show_data_expenses, expenses_str, expenses_num, label_warn2), 
+                                                                               load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
 
 label_warn2 = Label(tab2, text='',font=('arial',25,'bold'))
 label_warn2.grid(columnspan=2, row=8, pady=40)

@@ -158,10 +158,13 @@ def export_to_csv():
             totals_writer.writerow({'Type': 'Income', 'Total': total_income})
             totals_writer.writerow({'Type': 'Expenses', 'Total': total_expenses})
 
-        label_sum4.config(text='Data exported to income_expenses.csv and totals.csv', fg='green')
+        label_sum5.config(text='Data exported to income_expenses.csv and totals.csv', fg='green')
+
+        # Open the exported CSV file in a new window
+        subprocess.Popen(['start', 'income_expenses.csv'], shell=True)
 
     except Exception as e:
-        label_sum4.config(text='Error exporting data: {}'.format(str(e)), fg='red')
+        label_sum5.config(text='Error exporting data: {}'.format(str(e)), fg='red')
 
 
 
@@ -204,10 +207,10 @@ def load_data_from_csv():
         # Calculate and set the difference in output_entry3
         output_entry3.set(abs(int(output_entry1.get()) - int(output_entry2.get())))
 
-        label_sum4.config(text='Data loaded from income_expenses.csv and totals.csv', fg='green')
+        label_sum5.config(text='Data loaded from income_expenses.csv and totals.csv', fg='green')
 
     except Exception as e:
-        label_sum4.config(text='Error loading data: {}'.format(str(e)), fg='red')
+        label_sum5.config(text='Error loading data: {}'.format(str(e)), fg='red')
 
 
 update_totals()
@@ -305,5 +308,8 @@ Import_btn = Button(tab3,text="Import to CSV",width=20,font=('arial',15,'bold'),
 
 label_sum4 = Label(tab3, text='',font=('arial',25,'bold'))
 label_sum4.grid(column=0, row=8, pady=40)
+
+label_sum5 = Label(tab3, text='',font=('arial',25,'bold'))
+label_sum5.grid(column=0, row=9, pady=40)
 
 root.mainloop()

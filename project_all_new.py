@@ -212,7 +212,7 @@ show_data_income.grid(row=7,columnspan=2, pady=30,padx=(100,0))
 
 #page 2 
 
-Label_date_income = Label(tab2,text="กรุณาใส่วันที่ (วัน/เดือน/ปี) (คศ.)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
+Label_date_income = Label(tab2,text="กรุณาใส่วันที่ (วัน/เดือน/ปี)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
 cal = DateEntry(tab2, font=('arial', 15, 'bold'), date_pattern='dd/MM/yyyy', textvariable=income_date)
 cal.grid(row=1, column=0)
 

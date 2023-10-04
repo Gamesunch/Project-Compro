@@ -63,7 +63,7 @@ output_entry2 = IntVar()
 output_entry3 = IntVar()
 
 #function
-def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount):
+def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, label_warn):
     date = date_detail.get()
     detail = entry_detail.get()
     num = entry_amount.get()
@@ -143,7 +143,7 @@ def export_to_csv():
   
 #page 1
 Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี) (คศ.)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
-ety_date_income = Entry(tab1,width='20',font=('arial',15,'bold'), textvariable=income_date, justify='center').grid(row=1 , column= 0)
+ety_date_income = Entry(tab1,width='20',font=('arial',15,'bold'), textvariable=income_date, justify='center').grid(row=1 , column= 0) 
 
 Label_detail_income = Label(tab1,text="กรุณากรอกรายการรายรับ",font=('arial',15,'bold')).grid(row=0,column=1,pady=(50))
 ety_detail_income = Entry(tab1,width='30',font=('arial',15,'bold'), textvariable=income_str, justify='center').grid(row=1 , column= 1,)
@@ -154,10 +154,10 @@ ety_amount_income = Entry(tab1,width='30',font=('arial',15,'bold'), textvariable
 option = ttk.Combobox(tab1,state="readonly",values=["เงินสด", "เงินโอน"],width='18',font=('arial',15,'bold'), textvariable=comment_var).grid(row=5,column=1,pady=(30,0),)
 comment_var.set(value='เงินสด')
 
-btn_save = Button(tab1,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date,data_income_dict, show_data_income, income_str, income_num),load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
+btn_save = Button(tab1,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date,data_income_dict, show_data_income, income_str, income_num, label_warn1),load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
 
-label_warn = Label(tab1, text='',font=('arial',25,'bold'))
-label_warn.grid(columnspan=2, row=8, pady=40)
+label_warn1 = Label(tab1, text='',font=('arial',25,'bold'))
+label_warn1.grid(columnspan=2, row=8, pady=40)
 
 show_data_income = ttk.Treeview(tab1, columns=('Date','Detail','Amount','Comment'),show='headings')
 
@@ -191,10 +191,10 @@ ety_amount_income = Entry(tab2,width='30',font=('arial',15,'bold'), textvariable
 option = ttk.Combobox(tab2,state="readonly",values=["เงินสด", "เงินโอน"],width='18',font=('arial',15,'bold'), textvariable=comment_var).grid(row=5,column=1,pady=(30,0),)
 comment_var.set(value='เงินสด')
 
-btn_save = Button(tab2,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date, data_expenses_dict, show_data_expenses, expenses_str, expenses_num), load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
+btn_save = Button(tab2,text="บันทึก",font=('arial',15,'bold'),command=lambda: [save_data(income_date, data_expenses_dict, show_data_expenses, expenses_str, expenses_num, label_warn2), load_data(data_income_dict,data_expenses_dict)]).grid(row=6,column=1,pady=(20,0),)
 
-label_warn = Label(tab2, text='',font=('arial',25,'bold'))
-label_warn.grid(columnspan=2, row=8, pady=40)
+label_warn2 = Label(tab2, text='',font=('arial',25,'bold'))
+label_warn2.grid(columnspan=2, row=8, pady=40)
 
 show_data_expenses = ttk.Treeview(tab2, columns=('Date','Detail','Amount','Comment'),show='headings')
 
@@ -208,7 +208,7 @@ show_data_expenses.column('Detail', width=250, anchor='center')
 show_data_expenses.column('Amount', width=250, anchor='center')
 show_data_expenses.column('Comment', width=250, anchor='center')
 
-vsb = ttk.Scrollbar(tab1, orient="vertical", command=show_data_expenses.yview)
+vsb = ttk.Scrollbar(tab2, orient="vertical", command=show_data_expenses.yview)
 vsb.grid(row=7, column=2, pady=30)
 
 show_data_expenses.configure(yscrollcommand=vsb.set)

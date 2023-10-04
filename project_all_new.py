@@ -13,7 +13,7 @@ root.resizable(False,False)
 
 #function (menu)
 def About():
-    tkinter.messagebox.showinfo("โปรแกรมรายรับ-รายจ่าย","Test")
+    tkinter.messagebox.showinfo("โปรแกรมรายรับ-รายจ่าย","สร้างโดย นาย วรธน มีมูล 6604062630498 กับ นาย ภัทรกร ยุทธเทพา 6604062630412")
 def Exit():
     confirm = tkinter.messagebox.askquestion("ยืนยันการปิดโปรแกรม","ต้องการปิดโปรแกรมมั้ย ?")
     if confirm == "yes":
@@ -24,8 +24,6 @@ root.config(menu=myMenu)
 
 #Sub Menu
 menuitem = Menu()
-menuitem.add_command(label="Save File")
-menuitem.add_command(label="Load File")
 menuitem.add_command(label="About",command=About)
 menuitem.add_command(label="Exit",command=Exit)
 
@@ -142,8 +140,36 @@ def export_to_csv():
       except Exception as e:
         label_sum4.config(text='Error exporting data: {}'.format(str(e)), fg='red')
 
+def load_data_from_csv():
+    try:
+        with open('income_expenses.csv', 'r', newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                date_str = row['Date']
+                if row['Type'] == 'Income':
+                    data_income_dict[date_str] = {
+                        'Date': date_str,
+                        'Detail': row['Detail'],
+                        'Amount': int(row['Amount']),
+                        'Comment': row['Comment']
+                    }
+                    show_data_income.insert('', 'end', values=(date_str, row['Detail'], int(row['Amount']), row['Comment']))
+                elif row['Type'] == 'Expenses':
+                    data_expenses_dict[date_str] = {
+                        'Date': date_str,
+                        'Detail': row['Detail'],
+                        'Amount': int(row['Amount']),
+                        'Comment': row['Comment']
+                    }
+                    show_data_expenses.insert('', 'end', values=(date_str, row['Detail'], int(row['Amount']), row['Comment']))
 
-  
+        # Update the totals
+        load_data(data_income_dict, data_expenses_dict)
+        label_sum4.config(text='Data loaded from income_expenses.csv', fg='green')
+
+    except Exception as e:
+        label_sum4.config(text='Error loading data: {}'.format(str(e)), fg='red')
+
 #page 1
 Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))
 cal = DateEntry(tab1, font=('arial', 15, 'bold'), date_pattern='dd/MM/yyyy', textvariable=income_date)
@@ -233,8 +259,9 @@ total_all = Label(tab3,text="สรุปการใช้เงิน",font=('
 total_all = Entry(tab3,width='50',font=('arial',15,'bold'), textvariable=output_entry3, justify='center',state='readonly').grid(row=5 , column= 0)
 
 export_btn = Button(tab3,text="Export to CSV",width=20,font=('arial',15,'bold'),command=export_to_csv).grid(row=6,column=0,pady=15)
+Import_btn = Button(tab3,text="Import to CSV",width=20,font=('arial',15,'bold'),command=load_data_from_csv).grid(row=7,column=0,pady=15)
 
 label_sum4 = Label(tab3, text='',font=('arial',25,'bold'))
-label_sum4.grid(column=0, row=7, pady=40)
+label_sum4.grid(column=0, row=8, pady=40)
 
 root.mainloop()

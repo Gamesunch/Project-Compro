@@ -131,7 +131,7 @@ def load_data(data_income_dict, data_expenses_dict):
         label_sum4.config(text='คุณใช้เงินมากว่ารายรับ {} บาท'.format(total_expenses_amount-total_income_amount))
         label_sum4.config(fg='red')
 
-# Function to export data to CSV
+
 def export_to_csv():
     try:
         with open('income_expenses.csv', 'w', newline='\n', encoding='utf-8') as csvfile:
@@ -147,27 +147,29 @@ def export_to_csv():
                 entry['Type'] = 'Expenses'
                 writer.writerow(entry)
 
-        # Separate total income and total expenses
+        # แยก total income กับ total expenses
         total_income = sum(entry['Amount'] for entry in data_income_dict.values())
         total_expenses = sum(entry['Amount'] for entry in data_expenses_dict.values())
 
-        # Write separate totals to a totals CSV file
+        # แยกไฟล์ total ไว้
         with open('totals.csv', 'w', newline='\n', encoding='utf-8') as totalsfile:
             totals_writer = csv.DictWriter(totalsfile, fieldnames=['Type', 'Total'])
             totals_writer.writeheader()
             totals_writer.writerow({'Type': 'Income', 'Total': total_income})
             totals_writer.writerow({'Type': 'Expenses', 'Total': total_expenses})
 
-        label_sum4.config(text='Data exported to income_expenses.csv and totals.csv', fg='green')
+        label_sum5.config(text='Data exported to income_expenses.csv and totals.csv', fg='green')
+
+        subprocess.Popen(['start', 'income_expenses.csv'], shell=True)
 
     except Exception as e:
-        label_sum4.config(text='Error exporting data: {}'.format(str(e)), fg='red')
+        label_sum5.config(text='Error exporting data: {}'.format(str(e)), fg='red')
 
 
 
 def load_data_from_csv():
     try:
-        # Clear existing data in TreeView
+        # ลบ Data ในviewtree
         show_data_income.delete(*show_data_income.get_children())
         show_data_expenses.delete(*show_data_expenses.get_children())
 
@@ -201,13 +203,13 @@ def load_data_from_csv():
                 elif row['Type'] == 'Expenses':
                     output_entry2.set(int(row['Total']))
 
-        # Calculate and set the difference in output_entry3
+        # คำนวนสรุปจาก total.csv
         output_entry3.set(abs(int(output_entry1.get()) - int(output_entry2.get())))
 
-        label_sum4.config(text='Data loaded from income_expenses.csv and totals.csv', fg='green')
+        label_sum5.config(text='Data loaded from income_expenses.csv and totals.csv', fg='green')
 
     except Exception as e:
-        label_sum4.config(text='Error loading data: {}'.format(str(e)), fg='red')
+        label_sum5.config(text='Error loading data: {}'.format(str(e)), fg='red')
 
 
 update_totals()
@@ -305,5 +307,8 @@ Import_btn = Button(tab3,text="Import to CSV",width=20,font=('arial',15,'bold'),
 
 label_sum4 = Label(tab3, text='',font=('arial',25,'bold'))
 label_sum4.grid(column=0, row=8, pady=40)
+
+label_sum5 = Label(tab3, text='',font=('arial',15,'bold'))
+label_sum5.grid(column=0, row=9, pady=40)
 
 root.mainloop()

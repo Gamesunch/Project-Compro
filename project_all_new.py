@@ -51,9 +51,6 @@ notebook.grid(row=0,column=0,sticky=NW)
 data_income_dict = {}
 data_expenses_dict = {}
 
-total_income = 0
-total_expenses = 0
-
 income_date = StringVar()
 
 income_str = StringVar()
@@ -67,15 +64,6 @@ output_entry2 = IntVar()
 output_entry3 = IntVar()
 
 #function
-
-def update_totals():
-    global total_income, total_expenses
-    total_income = sum(entry['Amount'] for entry in data_income_dict.values())
-    total_expenses = sum(entry['Amount'] for entry in data_expenses_dict.values())
-    output_entry1.set(total_income)
-    output_entry2.set(total_expenses)
-    output_entry3.set(abs(total_income - total_expenses))
-
 def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, label_warn):
     date = date_detail.get_date()
     date_str = date.strftime('%d/%m/%Y') #เอามาเพื่อเปลี่ยนเป็น วว/ดด/ปป
@@ -83,7 +71,6 @@ def save_data(date_detail, data_dict, show_data, entry_detail, entry_amount, lab
     num = entry_amount.get()
     comment = comment_var.get()
     time = datetime.now().strftime('%H:%M:%S')
-    update_totals()
 
     try:
         num = int(num)
@@ -193,15 +180,29 @@ def load_data_from_csv():
                         'Comment': row['Comment']
                     }
                     show_data_expenses.insert('', 'end', values=(date_str, row['Detail'], int(row['Amount']), row['Comment']))
-
+        
         # Load totals from totals.csv
         with open('totals.csv', 'r', newline='', encoding='utf-8') as totalsfile:
             totals_reader = csv.DictReader(totalsfile)
             for row in totals_reader:
                 if row['Type'] == 'Income':
                     output_entry1.set(int(row['Total']))
+                    total_income = int(row['Total'])
                 elif row['Type'] == 'Expenses':
                     output_entry2.set(int(row['Total']))
+                    total_expenses = int(row['Total'])
+        
+        if total_income > total_expenses:
+            label_sum4.config(text='เยี่ยมเลยคุณสามารถเก็บเงินได้ {} บาท'.format(total_income-total_expenses))
+            label_sum4.config(fg='green')
+
+        elif total_income == total_expenses : 
+            label_sum4.config(text='คุณได้ใช้เงินเท่ากับที่ได้รับมา {} บาท'.format(total_income-total_expenses))
+            label_sum4.config(fg='orange')
+
+        else:
+            label_sum4.config(text='คุณใช้เงินมากว่ารายรับ {} บาท'.format(total_expenses-total_income))
+            label_sum4.config(fg='red')
 
         # คำนวนสรุปจาก total.csv
         output_entry3.set(abs(int(output_entry1.get()) - int(output_entry2.get())))
@@ -212,7 +213,6 @@ def load_data_from_csv():
         label_sum5.config(text='Error loading data: {}'.format(str(e)), fg='red')
 
 
-update_totals()
 
 #page 1
 Label_date_income = Label(tab1,text="กรุณาใส่วันที่ (วัน/เดือน/ปี)",font=('arial',15,'bold')).grid(row=0,column=0,padx=(50,0))

@@ -163,7 +163,7 @@ def load_data_from_csv():
                     }
                     show_data_expenses.insert('', 'end', values=(date_str, row['Detail'], int(row['Amount']), row['Comment']))
 
-        # Update the totals
+        # อัพเดทตรง Label ข้างล่าง
         load_data(data_income_dict, data_expenses_dict)
         label_sum4.config(text='Data loaded from income_expenses.csv', fg='green')
 

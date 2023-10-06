@@ -111,7 +111,7 @@ def load_data(data_income_dict, data_expenses_dict):
         label_sum4.config(fg='green')
 
     elif total_income_amount == total_expenses_amount : 
-        label_sum4.config(text='คุณได้ใช้เงินเท่ากับที่ได้รับมา {} บาท'.format(total_income_amount-total_expenses_amount))
+        label_sum4.config(text='คุณได้ใช้เงินเท่ากับที่ได้รับมา เหลือ {} บาท'.format(total_income_amount-total_expenses_amount))
         label_sum4.config(fg='orange')
 
     else:
@@ -197,7 +197,7 @@ def load_data_from_csv():
             label_sum4.config(fg='green')
 
         elif total_income == total_expenses : 
-            label_sum4.config(text='คุณได้ใช้เงินเท่ากับที่ได้รับมา {} บาท'.format(total_income-total_expenses))
+            label_sum4.config(text='คุณได้ใช้เงินเท่ากับที่ได้รับมาเหลือ {} บาท'.format(total_income-total_expenses))
             label_sum4.config(fg='orange')
 
         else:
